@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate />
+	<meta http-equiv="Pragma" content="no-cache" />
+	
+    <!-- <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="./node_modules/bootstrap-icons/font/bootstrap-icons.css" type="text/css">
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./node_modules/chart.js/dist/chart.umd.js"></script> -->
+	</script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+
+<body>
+    <div class="container" id="container">
+        <div id="commonContent">
+            <nav class="navbar bg-body-tertiary sticky-top" id="navBar">
+                <form action="" class="container-fluid justify-content-center">
+                    <button class="btn btn-outline-primary me-2" type="button" onclick="test()"
+                        id="OutletActiveUser" style="margin-top: 5px;">网点有效户</button>
+                    <button class="btn btn-outline-primary me-2" type="button" onclick="btnLostUser()" id="lostUser"
+                        style="margin-top: 5px;">流失客户</button>
+                    <button class="btn btn-outline-primary me-2" type="button" onclick="btnMarketHint()" id="marketHint"
+                        style="margin-top: 5px;">营销线索</button>
+                    <button class="btn btn-outline-primary me-2" type="button" onclick="btnCustomerMangerDetail()"
+                        id="customerManagerDetail" style="margin-top: 5px;">客户经理营销情况</button>
+                </form>
+            </nav>
+        </div>
+
+        <div id="customContent">
+            <!-- <div class="card chart-container" id="chart_for_data_display" style="margin-top: 20px;"></div> -->
+			<table class="table">
+				<thead>
+					<tr>
+						<td>col</td>
+						<td>col</td>
+					</tr>
+				</thead>
+				<tBody>
+					<tr>
+						<td>data</td>
+						<td>data</td>
+					</tr>
+				</tbody>
+			</table>
+			<div id='hhhh'></div>
+        </div>
+    </div>
+	
+	<script type="text/javascript">
+		function test(){
+			//var test = document.createElement('h1')
+			//test.innerHTML = "hello"
+			//document.getElementById("customContent").appendChild(test)
+			hhhh.innerHTML = "hhhhh"
+		}
+	</script>
+</body>
+
+<!-- Modal -->
+<!-- <div class="modal fade" id="warningModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content modal-warning text-warning-emphasis">
+            <div class="modal-header">
+                <i class="bi bi-exclamation-triangle"></i>
+                <h1 class="modal-title fs-4" id="warningModalLabel">提示</h1>
+                <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body justify-content-center">
+                <h3>无结果</h3>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" data-bs-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+<!-- global variables -->
+<script type="text/javascript">
+    var lastSearchIndex = -1
+    var dataOutletActiveUser = new Array()
+    var dataLostUser = new Array()
+	document.write("hello")
+</script>
+
+<!-- window onload event -->
+<script>
+    window.onload = () => {
+        btnOutletActiveUser()
+        dataLostUser.push(Array(1, 2, 3), Array(1.023, 22.45, 3.78), Array(10.023, 1122.45, 3333.78))
+    }
+</script>
+
+<!-- button events logit -->
+<script>
+    function btnOutletActiveUser() {
+        // clear customContent
+        ClearCustomContent()
+
+        // create a table element
+        outletActiveUserTable()
+
+        // display charts
+        lineChart()
+        pieChart()
+    }
+
+    function btnLostUser() {
+        // clear customContent if exist
+        ClearCustomContent()
+        // Deactive the button of outletActiveUser
+        DeactiveOutletActiveUser()
+
+        createSearchInput(btnSearch)
+
+        totalLostUserTable()
+
+        // loading animation
+        // Loading()
+
+    }
+
+    function btnMarketHint() {
+        // clear customContent if exist
+        ClearCustomContent()
+        // Deactive the button of outletActiveUser
+        DeactiveOutletActiveUser()
+        // loading animation
+        Loading()
+    }
+
+    function btnCustomerMangerDetail() {
+        // clear customContent if exist
+        ClearCustomContent()
+        // Deactive the button of outletActiveUser
+        DeactiveOutletActiveUser()
+        // loading animation
+        Loading()
+    }
+
+    function btnSearch() {
+        const inputVal = document.getElementById('searchInput').value
+        if (inputVal === "") {
+            return
+        }
+
+        var searchResult = dataLostUser[0].indexOf(Number(inputVal))
+        if (searchResult === -1) {
+            const myModal = new bootstrap.Modal(document.getElementById('warningModal'),)
+            myModal.show()
+        } else {
+            if (document.getElementById('totalLostUserTable') !== null) {
+                document.getElementById('totalLostUserTable').remove()
+            }
+            lostUserSearchResultTable(searchResult)
+        }
+    }
+
+</script>
+
+
+<!-- table logit -->
+<script>
+    function outletActiveUserTable() {
+        var table_div = document.createElement('div')
+        var table = document.createElement('table')
+
+        table_div.appendChild(table)
+        table_div.classList.add('table-responsive')
+        table_div.style.cssText = 'overflow-y: auto; max-height: 300px;'
+        table_div.setAttribute('id', 'outletActiveUserTable')
+
+
+        table.classList.add('table', 'table-hover', 'mb-0')
+
+        // create thead and set columns' name
+        var tHead = document.createElement('thead')
+        var tHead_tr = document.createElement('tr')
+        tHead.style.position = 'sticky'
+        tHead.style.top = '0px'
+        for (let i = 0; i < 10; i++) {
+            var td = document.createElement('td')
+            tHead_tr.appendChild(td)
+
+            td.setAttribute('scope', 'col')
+            td.style.fontWeight = 900
+            td.style.color = '#ffffff'
+            td.style.background = '#2a5cbd'
+            if (i === 0) {
+                continue
+            }
+            td.innerHTML = "column " + i
+        }
+        tHead.appendChild(tHead_tr)
+
+        // create tbody
+        var tBody = document.createElement('tBody')
+
+        for (let i = 0; i < 20; i++) {
+            var tr = document.createElement('tr')
+            var th = document.createElement('th')
+            th.setAttribute('scope', 'row')
+            th.innerHTML = 'row' + i
+            tr.appendChild(th)
+            tBody.appendChild(tr)
+
+            // fullfill data
+            for (let j = 0; j < 9; j++) {
+                var td = document.createElement('td')
+                tr.appendChild(td)
+                var randVal = Math.random()
+
+                // setting td style
+                var spanElm = document.createElement('span')
+                var icon = document.createElement('i')
+                var spanText = document.createElement('span')
+                spanText.innerHTML = randVal.toFixed(4)
+                if (randVal < 0.5) {
+                    spanElm.classList.add('text-danger')
+                    icon.classList.add('bi', 'bi-caret-down-fill')
+                } else {
+                    spanElm.classList.add('text-success')
+                    icon.classList.add('bi', 'bi-caret-up-fill')
+                }
+                spanElm.append(icon, spanText)
+                td.appendChild(spanElm)
+            }
+        }
+        table.appendChild(tHead)
+        table.appendChild(tBody)
+
+        document.getElementById('customContent').appendChild(table_div)
+    }
+
+    function totalLostUserTable() {
+        if (document.getElementById("totalLostUserTable") !== null) {
+            return
+        }
+
+        var table_div = document.createElement('div')
+        var table = document.createElement('table')
+
+        table_div.appendChild(table)
+        table_div.classList.add('table-responsive')
+        table_div.style.cssText = 'overflow-y: auto; max-height: 300px;'
+        table_div.setAttribute('id', 'totalLostUserTable')
+
+        table.classList.add('table', 'table-hover', 'mb-0')
+
+        // create thead and set columns' name
+        var tHead = document.createElement('thead')
+        var tHead_tr = document.createElement('tr')
+        tHead.style.position = 'sticky'
+        tHead.style.top = '0px'
+
+        for (let i = 0; i <= dataLostUser.length; i++) {
+            var td = document.createElement('td')
+            tHead_tr.appendChild(td)
+
+            td.setAttribute('scope', 'col')
+            td.style.fontWeight = 900
+            td.style.color = '#ffffff'
+            td.style.background = '#2a5cbd'
+            if (i === 0) {
+                continue
+            }
+            td.innerHTML = "column " + i
+        }
+
+        tHead.appendChild(tHead_tr)
+
+        // create tbody
+        var tBody = document.createElement('tBody')
+
+        for (let i = 0; i < dataLostUser.length; i++) {
+            var tr = document.createElement('tr')
+            var th = document.createElement('th')
+            th.setAttribute('scope', 'row')
+            th.innerHTML = 'row' + i
+            tr.appendChild(th)
+            tBody.appendChild(tr)
+
+            // fullfill data
+            for (let j = 0; j < dataLostUser[i].length; j++) {
+                var td = document.createElement('td')
+                tr.appendChild(td)
+                var Val = dataLostUser[j][i]
+
+                // setting td style
+                var spanElm = document.createElement('span')
+                var icon = document.createElement('i')
+                var spanText = document.createElement('span')
+                spanText.innerHTML = Val
+                if (Math.random() < 0.5) {
+                    spanElm.classList.add('text-danger')
+                    icon.classList.add('bi', 'bi-caret-down-fill')
+                } else {
+                    spanElm.classList.add('text-success')
+                    icon.classList.add('bi', 'bi-caret-up-fill')
+                }
+                spanElm.append(icon, spanText)
+                td.appendChild(spanElm)
+            }
+        }
+        table.appendChild(tHead)
+        table.appendChild(tBody)
+
+        document.getElementById('customContent').appendChild(table_div)
+    }
+
+    function lostUserSearchResultTable(dataArrayIndex) {
+
+        if (document.getElementById("lostUserSearchResultTable") !== null) {
+            // the search result is the same as the last time
+            if (lastSearchIndex === dataArrayIndex) {
+                return
+            }
+            document.getElementById("lostUserSearchResultTable").remove()
+        }
+
+        lastSearchIndex = dataArrayIndex
+
+        var table_div = document.createElement('div')
+        var table = document.createElement('table')
+
+        table_div.appendChild(table)
+        table_div.classList.add('table-responsive')
+        table_div.style.cssText = 'overflow-y: auto; max-height: 300px;'
+        table_div.setAttribute('id', 'lostUserSearchResultTable')
+
+        table.classList.add('table', 'table-hover', 'mb-0')
+
+        // create thead and set columns' name
+        var tHead = document.createElement('thead')
+        var tHead_tr = document.createElement('tr')
+        tHead.style.position = 'sticky'
+        tHead.style.top = '0px'
+
+        for (let i = 0; i <= dataLostUser[0].length; i++) {
+            var td = document.createElement('td')
+            tHead_tr.appendChild(td)
+
+            td.setAttribute('scope', 'col')
+            td.style.fontWeight = 900
+            td.style.color = '#ffffff'
+            td.style.background = '#2a5cbd'
+            if (i === 0) {
+                continue
+            }
+            td.innerHTML = "column " + i
+        }
+
+        tHead.appendChild(tHead_tr)
+
+        // create tbody
+        var tBody = document.createElement('tBody')
+
+        // create a row in tbody
+        var tr = document.createElement('tr')
+        var th = document.createElement('th')
+        th.setAttribute('scope', 'row')
+        th.innerHTML = 'row' + dataArrayIndex
+        tr.appendChild(th)
+        tBody.appendChild(tr)
+
+        // fullfill data
+        for (let i = 0; i < dataLostUser.length; i++) {
+            var td = document.createElement('td')
+            tr.appendChild(td)
+            var Val = dataLostUser[i][dataArrayIndex]
+
+            // setting td style
+            var spanElm = document.createElement('span')
+            var icon = document.createElement('i')
+            var spanText = document.createElement('span')
+            spanText.innerHTML = Val
+            if (Math.random() < 0.5) {
+                spanElm.classList.add('text-danger')
+                icon.classList.add('bi', 'bi-caret-down-fill')
+            } else {
+                spanElm.classList.add('text-success')
+                icon.classList.add('bi', 'bi-caret-up-fill')
+            }
+            spanElm.append(icon, spanText)
+            td.appendChild(spanElm)
+        }
+
+        table.appendChild(tHead)
+        table.appendChild(tBody)
+
+        document.getElementById('customContent').appendChild(table_div)
+
+    }
+
+</script>
+
+<!-- chart logit -->
+<script>
+    function lineChart() {
+        let canvas_div = document.createElement('div')
+        var canvas = document.createElement('canvas')
+
+        canvas_div.classList.add("card", "chart-container")
+        canvas_div.style.cssText = "margin-top: 20px;"
+        canvas_div.setAttribute('id', 'lineChart')
+        canvas_div.appendChild(canvas)
+        document.getElementById('customContent').appendChild(canvas_div)
+
+        canvas.style.cssText = "min-height: 200px;"
+        const ctx = canvas.getContext('2d')
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                datasets: [{
+                    label: 'last week',
+                    backgroundColor: '#9BD0F5',
+                    borderColor: '#215646',
+                    data: [3000, 4000, 2000, 5000, 8000, 9000, 2000],
+                },
+                {
+                    label: 'this week',
+                    backgroundColor: 'rgba(161,198,247,1)',
+                    borderColor: 'rgb(47,128,237)',
+                    data: [4000, 8000, 10000, 15000, 18000, 19000, 12000],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'line Chart'
+                    }
+                },
+
+            }
+        })
+    }
+
+    function pieChart() {
+
+        const data = {
+            labels: ['Red', 'Organe', 'Yellow', 'Green', 'Purple', 'Blue'],
+            datasets: [
+                {
+                    label: 'Dataset 1',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1,
+                    backgroundColor: ['#cb4335', '#1f618d', '#f1c40f', '#27ae60', '#884ea0', '#d35400']
+                }
+            ]
+        }
+
+        const config = {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        onHover: (evt, item, legend) => {
+                            legend.chart.data.datasets[0].backgroundColor.forEach((color, index, colors) => {
+                                colors[index] = index === item.index || color.length === 9 ? color : color + '4D'
+                            })
+                            legend.chart.update()
+                        },
+                        onLeave: (evt, item, legend) => {
+                            legend.chart.data.datasets[0].backgroundColor.forEach((color, index, colors) => {
+                                colors[index] = color.length === 9 ? color.slice(0, -2) : color
+                            })
+                            legend.chart.update()
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Pie Chart'
+                    }
+                }
+            }
+        }
+
+        let canvas_div = document.createElement('div')
+        var canvas = document.createElement('canvas')
+
+        canvas_div.classList.add("card", "chart-container")
+        canvas_div.style.cssText = "margin-top: 20px;"
+        canvas_div.setAttribute('id', 'pieChart')
+        canvas_div.appendChild(canvas)
+        document.getElementById('customContent').appendChild(canvas_div)
+
+
+        const ctx = canvas.getContext('2d')
+        const myChart = new Chart(ctx, config)
+    }
+</script>
+
+
+<!-- utilities function -->
+<script>
+    function DeactiveOutletActiveUser() {
+        if (document.getElementById('OutletActiveUser').className.indexOf('active')) {
+            document.getElementById('OutletActiveUser').classList.remove('active')
+        }
+    }
+
+    function ClearCustomContent() {
+        if (document.getElementById('customContent').innerHTML !== "") {
+            document.getElementById('customContent').innerHTML = ""
+        }
+    }
+
+    function Loading() {
+        var loadingDiv = document.createElement('div')
+        var loading = document.createElement('div')
+        var text = document.createElement('span')
+
+        loadingDiv.classList.add('d-flex', 'justify-content-center')
+        loadingDiv.setAttribute('id', 'loading')
+
+        loading.classList.add('spinner-border', 'text-primary')
+        text.innerHTML = '加载中...'
+        loadingDiv.append(loading, text)
+
+        document.getElementById('customContent').appendChild(loadingDiv)
+        setTimeout(() => {
+            document.getElementById('loading').remove()
+        }, 500)
+    }
+
+    function createSearchInput(callbackFnSearch) {
+        // search input and button
+        var input_group_div = document.createElement('div')
+
+        // search button
+        var btnSearch = document.createElement('button')
+        var iconSearch = document.createElement('i')
+
+        // input area
+        var input = document.createElement('input')
+
+        input_group_div.append(input, btnSearch)
+        input_group_div.classList.add('input-group')
+        input_group_div.style.marginTop = '10px'
+        input_group_div.style.marginBottom = '10px'
+
+        btnSearch.classList.add('btn', 'btn-outline-primary')
+        btnSearch.setAttribute('type', 'button')
+        btnSearch.style.marginLeft = '5px'
+        btnSearch.setAttribute('id', 'searchBtn')
+        btnSearch.addEventListener('click', callbackFnSearch)
+        iconSearch.classList.add('bi', 'bi-search')
+        btnSearch.appendChild(iconSearch)
+
+        input.classList.add("form-control")
+        input.setAttribute('type', 'search')
+        input.setAttribute('placeholder', '请输入编号')
+        input.setAttribute('id', 'searchInput')
+        input.addEventListener('input', (event) => {
+            if (event.target.value === "") {
+                console.log('the input has been cleared')
+                document.getElementById('lostUserSearchResultTable').remove()
+                totalLostUserTable()
+            }
+        })
+
+
+        document.getElementById('customContent').appendChild(input_group_div)
+    }
+
+</html>
